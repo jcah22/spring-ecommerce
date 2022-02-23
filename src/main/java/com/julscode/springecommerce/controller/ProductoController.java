@@ -1,10 +1,12 @@
 package com.julscode.springecommerce.controller;
 
+import java.io.IOException;
 import java.util.Optional;
 
 import com.julscode.springecommerce.model.Producto;
 import com.julscode.springecommerce.model.Usuario;
 import com.julscode.springecommerce.service.ProductoService;
+import com.julscode.springecommerce.service.UploadFileService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +17,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 @RequestMapping("/productos")
@@ -24,6 +28,10 @@ public class ProductoController {
 
     @Autowired
     private ProductoService productoService;
+
+    @Autowired
+    private UploadFileService upload;
+
 
     @GetMapping("")
     public String show(Model model) {
@@ -38,10 +46,25 @@ public class ProductoController {
     }
 
     @PostMapping("/save")
-    public String save(Producto producto) {
+    public String save(Producto producto,@RequestPart("img") MultipartFile file) throws IOException {
         LOGGER.info("este es el objeto producto {}", producto);
         Usuario usuario = new Usuario(1);
         producto.setUsuario(usuario);
+        //imagen
+        if(producto.getId() == null){
+            String nombreImagen = upload.saveImage(file);
+            producto.setImagen(nombreImagen);
+        }else{
+            if(file.isEmpty()){  // editamos producto sin cambiar imagen 
+                Producto p = new Producto();
+                p=productoService.get(producto.getId()).get();
+                producto.setImagen(p.getImagen());
+
+            }else{
+                String nombreImagen = upload.saveImage(file);
+                producto.setImagen(nombreImagen);
+            }
+        }
         productoService.save(producto);
         return "redirect:/productos";
     }
