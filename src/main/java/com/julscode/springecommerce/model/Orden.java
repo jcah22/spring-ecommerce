@@ -2,8 +2,20 @@ package com.julscode.springecommerce.model;
 
 import java.util.Date;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "ordenes")
 public class Orden {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     private String numero;
@@ -14,15 +26,40 @@ public class Orden {
 
     private double total;
 
+    @ManyToOne
+    private Usuario usuario;
+
+    @OneToOne(mappedBy = "orden")
+    private DetalleOrden detalle;
+
     public Orden() {
     }
 
-    public Orden(Integer id, String numero, Date fechaCreacion, Date fechaRecibida, double total) {
+    public DetalleOrden getDetalle() {
+        return detalle;
+    }
+
+    public void setDetalle(DetalleOrden detalle) {
+        this.detalle = detalle;
+    }
+
+    public Orden(Integer id, String numero, Date fechaCreacion, Date fechaRecibida, double total, Usuario usuario,
+            DetalleOrden detalle) {
         this.id = id;
         this.numero = numero;
         this.fechaCreacion = fechaCreacion;
         this.fechaRecibida = fechaRecibida;
         this.total = total;
+        this.usuario = usuario;
+        this.detalle = detalle;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 
     public Integer getId() {
@@ -67,10 +104,12 @@ public class Orden {
 
     @Override
     public String toString() {
-        return "Orden [fechaCreacion=" + fechaCreacion + ", fechaRecibida=" + fechaRecibida + ", id=" + id + ", numero="
-                + numero + ", total=" + total + "]";
+        return "Orden [detalle=" + detalle + ", fechaCreacion=" + fechaCreacion + ", fechaRecibida=" + fechaRecibida
+                + ", id=" + id + ", numero=" + numero + ", total=" + total + ", usuario=" + usuario + "]";
     }
 
-    
+  
+
+   
 
 }
