@@ -49,7 +49,6 @@ public class Usuario {
     public Usuario() {
     }
 
-    
 
     public Usuario(Integer id) {
         this.id = id;
