@@ -79,7 +79,32 @@ public class HomeController {
         model.addAttribute("cart", detalles);
         model.addAttribute("orden", orden);
 
-        
+        return "usuario/carrito";
+    }
+
+    // quitar un producto del carrito 
+    @GetMapping("/delete/cart/{id}")
+    public String deleteproductocart(@PathVariable Integer id,Model model){
+        List<DetalleOrden> ordenesNueva = new ArrayList<DetalleOrden>();
+
+        for(DetalleOrden detalleOrden : detalles){
+            if(detalleOrden.getProducto().getId() != id){
+                ordenesNueva.add(detalleOrden);
+            }
+
+
+
+        }
+        // la nueva lista con los productos restantes
+        detalles = ordenesNueva;
+
+        double sumaTotal= 0;
+        sumaTotal = detalles.stream().mapToDouble(dt -> dt.getTotal()).sum();
+
+        orden.setTotal(sumaTotal);
+        model.addAttribute("cart", detalles);
+        model.addAttribute("orden", orden);
+
 
 
         return "usuario/carrito";
