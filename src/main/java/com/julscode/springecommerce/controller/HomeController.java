@@ -7,7 +7,9 @@ import java.util.Optional;
 import com.julscode.springecommerce.model.DetalleOrden;
 import com.julscode.springecommerce.model.Orden;
 import com.julscode.springecommerce.model.Producto;
+import com.julscode.springecommerce.model.Usuario;
 import com.julscode.springecommerce.service.ProductoService;
+import com.julscode.springecommerce.service.UsuarioService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +30,9 @@ public class HomeController {
 
     @Autowired
     private ProductoService productoService;
+
+    @Autowired
+    private UsuarioService usuarioService;
 
     // para almacenar los detalles de la orden
     List<DetalleOrden> detalles = new ArrayList();
@@ -122,7 +127,13 @@ public class HomeController {
     }
 
     @GetMapping("/order")
-    public String order(){
+    public String order(Model model){
+        Usuario usuario = usuarioService.findById(1);
+
+
+        model.addAttribute("cart", detalles);
+        model.addAttribute("orden", orden);
+        model.addAttribute("usuario", usuario);
 
 
         return "usuario/resumenorden";
