@@ -1,6 +1,7 @@
 package com.julscode.springecommerce.controller;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -8,6 +9,8 @@ import com.julscode.springecommerce.model.DetalleOrden;
 import com.julscode.springecommerce.model.Orden;
 import com.julscode.springecommerce.model.Producto;
 import com.julscode.springecommerce.model.Usuario;
+import com.julscode.springecommerce.service.DetalleOrdenService;
+import com.julscode.springecommerce.service.OrdenService;
 import com.julscode.springecommerce.service.ProductoService;
 import com.julscode.springecommerce.service.UsuarioService;
 
@@ -33,6 +36,12 @@ public class HomeController {
 
     @Autowired
     private UsuarioService usuarioService;
+
+    @Autowired
+    private OrdenService ordenService;
+
+    @Autowired
+    private DetalleOrdenService detalleOrdenService;
 
     // para almacenar los detalles de la orden
     List<DetalleOrden> detalles = new ArrayList();
@@ -137,6 +146,35 @@ public class HomeController {
 
 
         return "usuario/resumenorden";
+    }
+
+    @GetMapping("/saveOrder")
+    public String saveOrder(){
+
+        Date fechaCreacion = new Date();
+        orden.setFechaCreacion(fechaCreacion);
+        orden.setNumero(ordenService.generarNumeroOrden());
+
+        // usuario
+        Usuario usuario = usuarioService.findById(1);
+
+        orden.setUsuario(usuario);
+        ordenService.save(orden);
+
+        // guardar detalles
+        for(DetalleOrden dt :detalles){
+            dt.setOrden(orden);
+            detalleOrdenService.save(dt);
+
+        }
+
+        //limpiar lista y orden 
+        orden = new Orden();
+        detalles.clear();
+
+
+
+        return "redirect:/";
     }
 
 }

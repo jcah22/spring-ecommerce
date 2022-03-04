@@ -9,5 +9,7 @@ public interface OrdenService {
     Orden save(Orden orden);
 
     List<Orden> findAll();
+
+   String  generarNumeroOrden();
     
 }
