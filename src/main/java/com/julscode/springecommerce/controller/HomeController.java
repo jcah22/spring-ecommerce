@@ -136,20 +136,18 @@ public class HomeController {
     }
 
     @GetMapping("/order")
-    public String order(Model model){
+    public String order(Model model) {
         Usuario usuario = usuarioService.findById(1);
-
 
         model.addAttribute("cart", detalles);
         model.addAttribute("orden", orden);
         model.addAttribute("usuario", usuario);
 
-
         return "usuario/resumenorden";
     }
 
     @GetMapping("/saveOrder")
-    public String saveOrder(){
+    public String saveOrder() {
 
         Date fechaCreacion = new Date();
         orden.setFechaCreacion(fechaCreacion);
@@ -162,19 +160,26 @@ public class HomeController {
         ordenService.save(orden);
 
         // guardar detalles
-        for(DetalleOrden dt :detalles){
+        for (DetalleOrden dt : detalles) {
             dt.setOrden(orden);
             detalleOrdenService.save(dt);
 
         }
 
-        //limpiar lista y orden 
+        // limpiar lista y orden
         orden = new Orden();
         detalles.clear();
 
-
-
         return "redirect:/";
+    }
+
+
+    @PostMapping("/search")
+    public String searchProduct(@RequestParam String nombre, Model model){
+        log.info("Nombre del producto: {}" , nombre);
+        List<Producto> productos = productoService.findAll().stream().filter(p  -> p.getNombre().contains(nombre)).toList();
+        model.addAttribute("productos",productos);
+        return "usuario/home";
     }
 
 }
